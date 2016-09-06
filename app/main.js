@@ -27,6 +27,7 @@ var requireQueue = function(modules, callback) {
 
 requireQueue([
     'libs/lockr',
+    'router',
     'my-conf',
     'my-app',
     'login',

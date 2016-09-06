@@ -4,9 +4,10 @@ appPasscode.clearNotify = function(){
     if ('notify' in this)  myApp.closeNotification(this.notify);
 }
 appPasscode.verifyLogin = function(){
-    console.log('login');
+    $$('.loading-page').show();
     app.postJSON('login',{action:'login',username:$$('#app-username').val(),password:$$('#app-password').val()}
         ,function(data){
+            $$('.loading-page').hide();
             if ('error' in data){
                 app.validToken(data);
                 return false;
@@ -150,11 +151,11 @@ $$(document).on('pageInit', function (e) {
             break;
         case 'customer-lookup':
             $$('#frm-search-customer').on('beforeSubmit',function(){
-                vpsApp.lookup();
+                vpsCustomers.lookup();
                 return false;
             })
             $$('#app-submit-btn').on('click', function () {
-                vpsApp.lookup();
+                vpsCustomers.lookup();
             });
             break;
 
@@ -166,7 +167,10 @@ $$(document).on('pageAfterAnimation', function (e) {
     // Code for About page
     switch(page.name){
         case 'customer-list':
-            vpsApp.list();
+            vpsCustomers.list();
+            break;
+        case 'customer-info':
+            vpsCustomers.infoBinding();
             break;
     }
 });
