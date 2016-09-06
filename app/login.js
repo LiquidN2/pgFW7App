@@ -8,10 +8,7 @@ appPasscode.verifyLogin = function(){
     app.postJSON('login',{action:'login',username:$$('#app-username').val(),password:$$('#app-password').val()}
         ,function(data){
             if ('error' in data){
-                appPasscode.notify = myApp.addNotification({
-                    title: 'Error Login',
-                    message:data.msg
-                });
+                app.validToken(data);
                 return false;
             }
             Lockr.set('token',data);
@@ -24,16 +21,32 @@ appPasscode.login = function(){
     this.loggedIn = true;
     mainView.router.loadPage('pages/dashboard.html');
 }
+appPasscode.clearKeys = function(){
+    this.keys = '';
+    this.showKeys();
+}
+appPasscode.showKeys = function(){
+    keys = this.keys;
+
+    for (i = 1; i <= 4; i++) {
+        if (i <= keys.length) {
+            c = '*';
+        } else {
+            c = '';
+        }
+        $$('.passcodes .key-' + i + ' .key').html(c);
+    }
+}
 appPasscode.key = function (k,stage) {
     this.clearNotify();
     keys = this.keys;
     this.loggedIn = false;
     if (keys.length >= 4) return;
-    console.log(keys);
+    //console.log(keys);
     switch (k) {
         case 'back':
             this.keys = '';
-            mainView.router.loadPage('pages/login-set-passcode.html');
+            mainView.router.loadPage('pages/login_set_passcode.html');
             return;
             break;
         case 'login':
@@ -86,16 +99,9 @@ appPasscode.key = function (k,stage) {
                 break;
         }
     }
-    for (i = 1; i <= 4; i++) {
-        if (i <= keys.length) {
-            c = '*';
-        } else {
-            c = '';
-        }
-        $$('.passcodes .key-' + i + ' .key').html(c);
-    }
-    this.keys = keys;
 
+    this.keys = keys;
+    this.showKeys();
 }
 
 
@@ -106,19 +112,19 @@ $$(document).on('pageInit', function (e) {
     // Code for About page
     switch(page.name){
         case 'login-passcode':
-            appPasscode.keys = '';
+            appPasscode.clearKeys();
             $$('.numpad li').on('click', function (e) {
                 appPasscode.key($$(this).attr('rel'),0);
             })
             break;
         case 'login-set-passcode':
-            appPasscode.keys = '';
+            appPasscode.clearKeys();
             $$('.numpad li').on('click', function (e) {
                 appPasscode.key($$(this).attr('rel'),1);
             })
             break;
         case 'login-set-passcode2':
-            appPasscode.keys = '';
+            appPasscode.clearKeys();
             $$('.numpad li').on('click', function (e) {
                 appPasscode.key($$(this).attr('rel'),2);
             })
@@ -150,6 +156,17 @@ $$(document).on('pageInit', function (e) {
             $$('#app-submit-btn').on('click', function () {
                 vpsApp.lookup();
             });
+            break;
+
+    }
+});
+
+$$(document).on('pageAfterAnimation', function (e) {
+    var page = e.detail.page;
+    // Code for About page
+    switch(page.name){
+        case 'customer-list':
+            vpsApp.list();
             break;
     }
 });
